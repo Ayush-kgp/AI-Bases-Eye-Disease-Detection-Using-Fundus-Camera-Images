@@ -1,0 +1,43 @@
+{
+  "class_to_idx": {
+    "Central Serous Chorioretinopathy": 0,
+    "Diabetic Retinopathy": 1,
+    "Disc Edema": 2,
+    "Glaucoma": 3,
+    "Healthy": 4,
+    "Macular Scar": 5,
+    "Myopia": 6,
+    "Pterygium": 7,
+    "Retinal Detachment": 8,
+    "Retinitis Pigmentosa": 9
+  },
+  "class_to_idx_reverse": {
+    "0": "Central Serous Chorioretinopathy",
+    "1": "Diabetic Retinopathy",
+    "2": "Disc Edema",
+    "3": "Glaucoma",
+    "4": "Healthy",
+    "5": "Macular Scar",
+    "6": "Myopia",
+    "7": "Pterygium",
+    "8": "Retinal Detachment",
+    "9": "Retinitis Pigmentosa"
+  },
+  "combination_method": "simple_average",
+  "weights": {
+    "efficientnet": 0.5,
+    "mobilenet": 0.5
+  },
+  "solo_test_macro_f1": {
+    "efficientnet": 0.6249589089816345,
+    "mobilenet": 0.6150062126735237
+  },
+  "ensemble_test_macro_f1": 0.7050403102138448,
+  "low_support_classes": [
+    "Central Serous Chorioretinopathy",
+    "Disc Edema",
+    "Pterygium",
+    "Retinal Detachment",
+    "Retinitis Pigmentosa"
+  ]
+}

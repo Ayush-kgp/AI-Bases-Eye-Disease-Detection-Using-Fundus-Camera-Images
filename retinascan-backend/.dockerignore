@@ -1,0 +1,25 @@
+# Exclude development and test files from Docker context
+tests/
+docs/
+streamlit_app/
+ml/export/
+
+# Exclude heavy PyTorch training checkpoints (only ONNX files are containerized)
+*.pth
+*.pt
+
+# Virtual environment and local files
+venv/
+.venv/
+.env
+.git/
+.gitignore
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Output directories
+output_images/
+*.log

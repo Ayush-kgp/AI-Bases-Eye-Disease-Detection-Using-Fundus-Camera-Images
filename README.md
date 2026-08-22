@@ -1,151 +1,101 @@
-# Fundus Disease Detection System
+# RetinaScan AI — Fundus Eye Disease Detection System
 
-A deep learning-based system for detecting various retinal conditions from fundus images. This project uses EfficientNet-B0 architecture to classify fundus images into 39 different conditions, including normal cases and various retinal diseases.
+A production-grade deep learning system for automated ocular disease detection from retinal fundus camera photographs. Powered by a dual-CNN ensemble (**EfficientNet-B0** + **MobileNet-V2**) exported to **ONNX Runtime** for high-throughput, low-latency inference with **Grad-CAM visual explainability**.
 
-## Features
+---
 
-- **Real-time Disease Detection**: Upload fundus images and get instant predictions
-- **Attention Map Visualization**: See which regions of the image influenced the model's decision (via Grad-CAM)
-- **User-friendly Interface**: Clean and intuitive Streamlit-based web interface with dedicated buttons for prediction and attention map
-- **Comprehensive Analysis**: Supports 39 different retinal conditions
-- **Detailed Explanations**: Includes information about predictions and visualizations
-- **Medical Disclaimer**: Clearly states that results are for informational purposes only
+## 🌟 Key Capabilities & Benchmarks
 
-## Project Structure
+- **10 Diagnostic Categories**: Diabetic Retinopathy, Glaucoma, Healthy, Myopia, Macular Scar, Retinitis Pigmentosa, Disc Edema, Retinal Detachment, Central Serous Chorioretinopathy (CSCR), and Pterygium.
+- **Empirical Superiority**: The Simple-Average Ensemble achieves **0.705 Test Macro-F1** and **71.0% Accuracy** on 810 held-out test images, outperforming the best solo model by **+0.080 (+8.0% Macro-F1)**.
+- **ONNX Optimization**: Numerically verified parity ($< 4.5 \times 10^{-5}$ max difference) with sub-40ms CPU inference.
+- **Dual-Model Consensus & Reliability**: Real-time backbone agreement checks and automatic reliability warnings for low-support categories ($N < 25$).
+- **Visual Explainability**: High-resolution Grad-CAM heatmaps overlaid directly on the original fundus image.
+
+---
+
+## 📁 Repository Structure
 
 ```
-fundus-analysis/
-├── backend/
-│   ├── models/
-│   │   ├── efficientnet_best.pth
-│   │   └── mobilenet.pth
+AI-Bases-Eye-Disease-Detection-Using-Fundus-Camera-Images/
+├── retinascan-backend/             # Production FastAPI & ONNX inference service
 │   ├── app/
-│   │   ├── api/
-│   │   │   └── endpoints.py
-│   │   ├── models/
-│   │   │   └── predictor.py
-│   │   └── main.py
+│   │   ├── main.py                # FastAPI app with lifespan loading & CORS
+│   │   ├── routes/                # Endpoints: /health, /model/info, /predict
+│   │   ├── services/              # Ensemble inference, preprocessing & Grad-CAM
+│   │   ├── schemas/               # Pydantic request/response models
+│   │   └── utils/                 # Image validation (resolution, corruption)
+│   ├── ml/
+│   │   ├── export/                # ONNX export and verification scripts
+│   │   └── models/                # ONNX binaries & ensemble_config.json
+│   ├── docs/
+│   │   ├── model_evaluation.md    # Detailed empirical evaluation report
+│   │   └── gradcam_samples/       # Generated diagnostic heatmap samples
+│   ├── tests/                     # 11 unit & integration tests (100% pass)
+│   ├── streamlit_app/             # Modern interactive UI
+│   ├── Dockerfile                 # Production Docker container
 │   └── requirements.txt
-├── frontend/
-│   ├── app.py
-│   └── requirements.txt
+├── training-artifacts/             # Trained PyTorch checkpoints & 810 test images
+├── fundus-images-training.ipynb    # Kaggle training & evaluation notebook
 └── README.md
 ```
 
-## Installation
+---
 
-1. **Clone the repository and set up a virtual environment**
+## 🚀 Quickstart Guide
 
+### 1. Environment Setup
 ```bash
 # Clone the repository
-git clone [repository-url]
-cd [repository-name]
+git clone https://github.com/Ayush-kgp/AI-Bases-Eye-Disease-Detection-Using-Fundus-Camera-Images.git
+cd AI-Bases-Eye-Disease-Detection-Using-Fundus-Camera-Images
 
-# Create and activate a virtual environment
+# Create and activate virtual environment
 python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On Linux/Mac:
-source venv/bin/activate
+venv\Scripts\activate   # Windows
+source venv/bin/activate # Linux/macOS
+
+# Install backend dependencies
+pip install -r retinascan-backend/requirements.txt
 ```
 
-2. **Install backend dependencies:**
+### 2. Start the Backend Service
 ```bash
-cd backend
-pip install -r requirements.txt
+cd retinascan-backend
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 ```
+Interactive Swagger API documentation: [http://localhost:8000/docs](http://localhost:8000/docs)
 
-3. **Install frontend dependencies:**
+### 3. Launch the Streamlit Web Application
+In a separate terminal:
 ```bash
-cd ../frontend
-pip install -r requirements.txt
+# From the repository root
+streamlit run retinascan-backend/streamlit_app/app.py
+```
+Open your browser at [http://localhost:8501](http://localhost:8501).
+
+---
+
+## 🧪 Testing
+
+```bash
+cd retinascan-backend
+pytest -v
+```
+All 11 tests across API endpoints, model safety validation, image corruption rejection, and ONNX inference are automated.
+
+---
+
+## 🐳 Docker Deployment
+
+```bash
+cd retinascan-backend
+docker build -t retinascan-backend .
+docker run -d -p 8000:8000 --name retinascan-api retinascan-backend
 ```
 
-4. **Model Weights:**
-   - Place `efficientnet_best.pth` (and any other models) in `backend/models/`.
+---
 
-## Usage
+## ⚕️ Medical Disclaimer
 
-1. **Start the backend:**
-   ```bash
-   cd backend
-   uvicorn app.main:app --reload
-   ```
-
-2. **Start the frontend:**
-   ```bash
-   cd ../frontend
-   streamlit run app.py
-   ```
-
-3. **Open your browser:**
-   - Frontend: http://localhost:8501
-   - Backend API: http://localhost:8000
-
-## How to Use
-
-- Upload a fundus image.
-- Click **Predict Disease** to get the AI's prediction.
-- Click **Show Attention Map** to see which regions influenced the model's decision.
-
-### Disclaimer
-
-> **This prediction is generated by an AI model and is intended for informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult a qualified healthcare provider with any questions you may have regarding a medical condition.**
-
-### About the Attention Map
-
-> **The attention map (also known as Grad-CAM) highlights the regions of the fundus image that most influenced the AI model's prediction. Brighter or more colored areas indicate regions that were more important for the model's decision. This visualization can help provide insight into what the model is focusing on, but it should not be interpreted as a clinical explanation.**
-
-## Supported Conditions
-
-The system can detect various retinal conditions, including:
-- Normal and tessellated fundus
-- Diabetic Retinopathy (DR1, DR2, DR3)
-- Glaucoma and optic nerve conditions
-- Macular conditions (ERM, MH)
-- Retinal vein occlusions (BRVO, CRVO)
-- And many more...
-
-## System Architecture
-
-The project consists of two main components:
-
-1. **FastAPI Backend** (`app/main.py`):
-   - Handles image processing and model inference
-   - Implements Grad-CAM visualization
-   - Provides REST API endpoints for predictions
-
-2. **Streamlit Frontend** (`frontend/app.py`):
-   - User-friendly web interface
-   - Image upload and display
-   - Results visualization
-   - Educational content about fundus images
-
-## API Endpoints
-
-- `POST /api/v1/predict`: Get disease prediction for an uploaded image
-- `POST /api/v1/predict-with-gradcam`: Get Grad-CAM (attention map) visualization for an uploaded image
-- `GET /`: Check if the server is running
-
-## Model Details
-
-- Architecture: EfficientNet-B0
-- Input size: 224x224 pixels
-- Number of classes: 39
-- Preprocessing: CLAHE enhancement, normalization
-
-## Dependencies
-
-Key dependencies include:
-- PyTorch
-- FastAPI
-- Streamlit
-- OpenCV
-- Grad-CAM
-- Other requirements listed in `requirements.txt`
-
-## Important Notes
-
-- This is a screening tool and should not be used as a replacement for professional medical diagnosis
-- Always consult healthcare professionals for proper diagnosis and treatment
-- The model's predictions should be used as a supplementary tool for healthcare providers
+> **Research prototype for educational and technical demonstration only. Not certified as a clinical diagnostic tool or medical device. Always consult licensed medical professionals for ophthalmic diagnoses.**

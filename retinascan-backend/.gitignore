@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables
+.env
+.env.*
+
+# Model binaries and weights (artifacts should not be committed directly to git)
+*.pth
+*.pt
+*.onnx
+*.bin
+ml/models/*.onnx
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Test coverage and caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
